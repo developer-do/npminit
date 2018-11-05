@@ -4,8 +4,8 @@ gulp.task('hello', function () {
     return console.log('Hello');
 });
 
-gulp.task('world', function () {
+gulp.task('world',['hello'], function () {
     return console.log('World');
 });
 
-gulp.task('default', ['hello', 'world']);
+gulp.task('default', ['world']);
