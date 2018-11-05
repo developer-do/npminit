@@ -1,0 +1,10 @@
+@import "dep.css";
+
+body {
+    background: #fff;
+}
+ul, li {
+    list-style: none;
+}
+
+
