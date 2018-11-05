@@ -1,11 +1,11 @@
 var gulp = require('gulp');
+var uglify = require('gulp-uglify');
 
-gulp.task('hello', function () {
-    return console.log('Hello');
+gulp.task('uglify', function(){
+    return gulp.src('src/*.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('dist'));
 });
 
-gulp.task('world',['hello'], function () {
-    return console.log('World');
-});
 
-gulp.task('default', ['world']);
+gulp.task('default', ['uglify']);
