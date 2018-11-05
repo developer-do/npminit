@@ -7,5 +7,9 @@ gulp.task('uglify', function(){
         .pipe(gulp.dest('dist'));
 });
 
+gulp.task('watch', function(){
+    gulp.watch('src/*.js', ['uglify']);
+});
 
-gulp.task('default', ['uglify']);
+
+gulp.task('default', ['uglify', 'watch']);
