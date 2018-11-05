@@ -1,0 +1,22 @@
+{
+  "name": "npminit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developer-do/npminit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/developer-do/npminit/issues"
+  },
+  "homepage": "https://github.com/developer-do/npminit#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
