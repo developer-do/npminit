@@ -7,6 +7,7 @@ var browserSync = require('browser-sync').create();
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
 
 // dist 폴더를 기준으로 웹서버 실행
 gulp.task('server', ['uglify', 'minifycss', 'minifyhtml'], function () {
@@ -38,7 +39,9 @@ gulp.task('uglify', function () {
         })
         .pipe(source('main.js')) // vinyl object로 변환
         .pipe(buffer()) // buffered vinyl object 로 변환
+        .pipe(sourcemaps.init({loadMaps: true, debug: true})) // 소스맵 생성 준비
         .pipe(uglify()) // minify 해서
+        .pipe(sourcemaps.write('./')) // 생성된 소스맵을 스트림에 추
         .pipe(gulp.dest('dist.js')) // dist 퐆더에 저장
         .pipe(browserSync.reload({
             stream:true
@@ -49,7 +52,9 @@ gulp.task('uglify', function () {
 gulp.task('minifycss', function(){
     return gulp.src('src/**/*.css') // src 폴더 아래의 모든 css 파일을
         .pipe(concat('main.css')) // 병합하고
+        .pipe(sourcemaps.init({loadMaps: true, debug: true})) // 소스맵 생성 준비
         .pipe(minifycss()) // minify 해서
+        .pipe(sourcemaps.write('./')) // 생성된 소스맵을 스트림에 추가
         .pipe(gulp.dest('dist/css')) // dist 폴더에 저장
         .pipe(browserSync.reload({
             stream: true
