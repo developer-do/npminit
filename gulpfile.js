@@ -12,6 +12,7 @@ var newer = require('gulp-newer');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
 var plumber = require('gulp-plumber');
+var runSequence = require('run-sequence');
 
 var errorHandler = function (error) {
     console.error(error.message);
@@ -56,7 +57,7 @@ gulp.task('minifyhtml', function () {
 
 // javaScript 파일을 browserify 로 번들링
 gulp.task('uglify', function () {
-    return browserify('src/js/main.js')
+    return browserify({entried: ['src/js/main.js'], debug: true})
         .bundle() // browserify 로 번들링
         .on('error', errorHandler)
         .pipe(source('main.js')) // vinyl object 로 변환
@@ -77,8 +78,8 @@ gulp.task('minifycss', function(){
         .pipe(plumber(plumberOption)) // 빌드 과정에서 오류 발생시 gulp가 죽지 않도록 예외처리
         .pipe(sourcemaps.init({ loadMaps: true, debug: true })) // 소스맵 생성 준비
         .pipe(cached('css')) // 파일들을 캐시하고 캐시된 것보다 새로운 파일만 다음 단계로 진행
-        .pipe(minifycss()) // 새로운 파일만 minify 해서 (@import된 파일이 수정된 경우 최상위 파일은 캐시된 상태 그대로 이므로 minifycss를 타지 않아 정상적으로 종속성 관리가 이루어지지 않는 점을 주의!)
-        .pipe(remember('css')) // minify된 새로운 파일과 캐시된 나머지 내용들을 다시 스트림으로
+        .pipe(minifycss()) // 새로운 파일만 minify 해서 (@import 된 파일이 수정된 경우 최상위 파일은 캐시된 상태 그대로 이므로 minifycss를 타지 않아 정상적으로 종속성 관리가 이루어지지 않는 점을 주의!)
+        .pipe(remember('css')) // minify 된 새로운 파일과 캐시된 나머지 내용 들을 다시 스트림 으로
         .pipe(concat('main.css')) // 병합하고
         .pipe(sourcemaps.write('./')) // 생성된 소스맵을 스트림에 추가
         .pipe(gulp.dest('dist/css')) // dist 폴더에 저장
@@ -94,5 +95,11 @@ gulp.task('watch', function(){
     gulp.watch('src/**/*.html', ['minifyhtml']);
 });
 
-// gulp를 실행하면 default 로 minfycss task를 실행
-gulp.task('default', ['server', 'watch']);
+//빌드
+gulp.task('build', ['uglify', 'minifycss', 'minifyhtml']); 
+
+// gulp 를 실행 하면 수행할 default 작업
+gulp.task('default', function (done) {
+    // 빌드 (uglify, minifycss, minifyhtml)를 별렬로 수행한 뒤, 그 다음 server 와 watch 를 병렬로 수행
+    return runSequence('build', ['server', 'watch'], done);
+})
