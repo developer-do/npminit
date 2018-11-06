@@ -4,6 +4,9 @@ var concat = require('gulp-concat');
 var minifycss = require('gulp-minify-css');
 var minifyhtml = require('gulp-minify-html');
 var browserSync = require('browser-sync').create();
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 // dist 폴더를 기준으로 웹서버 실행
 gulp.task('server', ['uglify', 'minifycss', 'minifyhtml'], function () {
@@ -22,22 +25,29 @@ gulp.task('minifyhtml', function () {
         .pipe(browserSync.reload({
             stream: true // browserSync 로 브라우저에 반영
         }));
-})
+});
 
-// javaScript 파일을 minify
-gulp.task('uglify', function(){
-    return gulp.src('src/**/*.js') // src 폴더 아래의 모든 html 파일을
-        .pipe(concat('main.js')) // 병합하고
+// javaScript 파일을 browserify 로 번들링
+gulp.task('uglify', function () {
+    return browserify('src/js/main.js')
+        .bundle() // browserify로 버들링
+        .on('error', function (err) {
+            // browserify bundlung 과정에서 오류가 날 경우 gulp가 죽지않도록 예외처리
+            console.error(err);
+            this.rmit('end');
+        })
+        .pipe(source('main.js')) // vinyl object로 변환
+        .pipe(buffer()) // buffered vinyl object 로 변환
         .pipe(uglify()) // minify 해서
-        .pipe(gulp.dest('dist/js')) // dist 폴더에 저장
+        .pipe(gulp.dest('dist.js')) // dist 퐆더에 저장
         .pipe(browserSync.reload({
-            stream: true
+            stream:true
         }));
 });
 
 // CSS 파일을 minify
 gulp.task('minifycss', function(){
-    return gulp.src('src/css/main.css') // src 폴더 아래의 모든 css 파일을
+    return gulp.src('src/**/*.css') // src 폴더 아래의 모든 css 파일을
         .pipe(concat('main.css')) // 병합하고
         .pipe(minifycss()) // minify 해서
         .pipe(gulp.dest('dist/css')) // dist 폴더에 저장
