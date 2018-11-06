@@ -9,3 +9,7 @@ a:hover {
 button {
     outline: none;
 }
+li > a {
+    color: #695846;
+    text-decoration: none;
+}
