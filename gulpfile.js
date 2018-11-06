@@ -11,6 +11,16 @@ var sourcemaps = require('gulp-sourcemaps'); // sourcemap 생성
 var newer = require('gulp-newer');
 var cached = require('gulp-cached');
 var remember = require('gulp-remember');
+var plumber = require('gulp-plumber');
+
+var errorHandler = function (error) {
+    console.error(error.message);
+    this.emit('end');
+};
+
+var plumberOption = {
+    errorHandler: errorHandler
+}
 
 /*
     npm init
@@ -35,6 +45,7 @@ gulp.task('server', ['uglify', 'minifycss', 'minifyhtml'], function () {
 // HTML 파일을 minify
 gulp.task('minifyhtml', function () {
     return gulp.src('src/**/*.html') // src 폴더 아래의 모든 html 파일을 
+        .pipe(plumber(plumberOption)) // 빌드 과정에서 오류 발생시 gulp가 죽지 않도록 예외처리
         .pipe(newer('dist')) // dist에 있는 결과물 보다 새로운 파일만 다음 단계로 진행
         .pipe(minifyhtml()) // minify 해서
         .pipe(gulp.dest('dist')) // dist 폴더에 저장
@@ -46,14 +57,11 @@ gulp.task('minifyhtml', function () {
 // javaScript 파일을 browserify 로 번들링
 gulp.task('uglify', function () {
     return browserify('src/js/main.js')
-        .bundle() // browserify로 번들링
-        .on('error', function (err) {
-            // browserify bundlung 과정에서 오류가 날 경우 gulp가 죽지않도록 예외처리
-            console.error(err);
-            this.rmit('end');
-        })
-        .pipe(source('main.js')) // vinyl object로 변환
+        .bundle() // browserify 로 번들링
+        .on('error', errorHandler)
+        .pipe(source('main.js')) // vinyl object 로 변환
         .pipe(buffer()) // buffered vinyl object 로 변환
+        .pipe(plumber(plumberOption)) // 빌드 과정에서 오류 발생시 gulp 가 죽지 않도록 예외 처리
         .pipe(sourcemaps.init({loadMaps: true, debug: true})) // 소스맵 생성 준비
         .pipe(uglify()) // minify 해서
         .pipe(sourcemaps.write('./')) // 생성된 소스맵을 스트림에 추가
@@ -66,6 +74,7 @@ gulp.task('uglify', function () {
 // CSS 파일을 minify
 gulp.task('minifycss', function(){
     return gulp.src('src/**/*.css') // src 폴더 아래의 모든 css 파일을
+        .pipe(plumber(plumberOption)) // 빌드 과정에서 오류 발생시 gulp가 죽지 않도록 예외처리
         .pipe(sourcemaps.init({ loadMaps: true, debug: true })) // 소스맵 생성 준비
         .pipe(cached('css')) // 파일들을 캐시하고 캐시된 것보다 새로운 파일만 다음 단계로 진행
         .pipe(minifycss()) // 새로운 파일만 minify 해서 (@import된 파일이 수정된 경우 최상위 파일은 캐시된 상태 그대로 이므로 minifycss를 타지 않아 정상적으로 종속성 관리가 이루어지지 않는 점을 주의!)
