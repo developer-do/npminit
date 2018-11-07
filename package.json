@@ -17,6 +17,10 @@
   },
   "homepage": "https://github.com/developer-do/npminit#readme",
   "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babelify": "^10.0.0",
     "browser-sync": "^2.26.3",
     "browserify": "^16.2.3",
     "gulp": "^3.9.1",
@@ -29,6 +33,8 @@
     "gulp-remember": "^1.0.1",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-uglify": "^3.0.1",
+    "react": "^16.6.0",
+    "react-dom": "^16.6.0",
     "run-sequence": "^2.2.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"

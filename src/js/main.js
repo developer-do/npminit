@@ -1,6 +1,14 @@
-function oh() {
-    console.log("어렵디");
-    console.log("scss뭐지");
-    // console.log(1)
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+let rootElement = document.getElementById('application');
+let message = 'Hello World!';
+
+ReactDOM.render(
+	<div>{message}</div>,
+	rootElement
+);
+function add(a, b) {
+    return a + b;
 }
-oh();
+add(5, 10);
